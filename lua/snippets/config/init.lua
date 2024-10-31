@@ -1,7 +1,13 @@
+---@alias snippets.snippet string|fun(): string
+
 ---@class snippets.config
+---@field global table<string, snippets.snippet>
+---@field filetypes table<string, snippets.snippet>
 
 ---@class snippets.internalconfig
 local SnippetsDefaultConfig = {
+  global = {},
+  filetypes = {},
 }
 
 ---@type snippets.config | (fun(): snippets.config) | nil

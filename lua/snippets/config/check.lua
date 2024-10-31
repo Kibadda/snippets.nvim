@@ -18,6 +18,44 @@ end
 function M.validate(config)
   local ok, err
 
+  ok, err = validate("snippets", {
+    global = { config.global, "table", true },
+    filetypes = { config.filetypes, "table", true },
+  })
+  if not ok then
+    return false, err
+  end
+
+  for name, snippet in vim.spairs(config.global or {}) do
+    ok, err = validate("snippets.global." .. name, {
+      name = { name, "string" },
+      snippet = { snippet, { "string", "function" } },
+    })
+    if not ok then
+      return false, err
+    end
+  end
+
+  for filetype, snippets in vim.spairs(config.filetypes or {}) do
+    ok, err = validate("snippets.filetypes." .. filetype, {
+      filetype = { filetype, "string" },
+      snippets = { snippets, "table" },
+    })
+    if not ok then
+      return false, err
+    end
+
+    for name, snippet in vim.spairs(snippets) do
+      ok, err = validate("snippets.filetypes." .. filetype .. "." .. name, {
+        name = { name, "string" },
+        snippet = { snippet, { "string", "function" } },
+      })
+      if not ok then
+        return false, err
+      end
+    end
+  end
+
   return true
 end
 
